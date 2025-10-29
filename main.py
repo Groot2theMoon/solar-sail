@@ -40,8 +40,7 @@ def denormalize_vector(normalized_vector):
         physical_dict[var_name] = p_val
     return physical_dict
 
-def run_abaqus_and_evaluate(design_params, fidelity_level):
-    """Abaqus를 외부에서 실행하고, 성공 시 결과를 평가하는 함수"""
+def abaqus_evaluate(design_params, fidelity_level):
     params_str = json.dumps(design_params)
     fidelity_str = 'high' if fidelity_level == 1 else 'low'
     
@@ -88,7 +87,7 @@ def objective_function_mf(normalized_x: torch.Tensor):
         
         print(f"Evaluating point {i+1}/{normalized_x.shape[0]}: Fidelity {fidelity_level}, Params: {design_params}")
         
-        performance_score = run_abaqus_and_evaluate(design_params, fidelity_level)
+        performance_score = abaqus_evaluate(design_params, fidelity_level)
         output[i] = performance_score
         
     return output
