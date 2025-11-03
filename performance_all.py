@@ -62,28 +62,33 @@ def J_high(odb_path):
     try:
         odb = openOdb(path=odb_path, readOnly=True)
         step = odb.steps['Step-1']
+
         instance = odb.rootAssembly.instances['PART-1-1']
         nodes = instance.nodes
         elements = instance.elements
+
         initial_coords = np.array([node.coordinates for node in nodes])
         connectivity = np.array([elem.connectivity for elem in elements]) - 1
-        all_node_labels = [node.label for node in nodes]
+
+        node_map = {node.label: idx for idx, node in enumerate(nodes)}
 
         for frame in step.frames:
+            displacements = np.zeros_like(initial_coords)
             displacement_field = frame.fieldOutputs['U']
 
-            displacements = np.zeros_like(initial_coords)
-            disp_values = displacement_field.values
-
-            odb_node_labels = [v.nodeLabel for v in disp_values]
-            map_indices = np.searchsorted(all_node_labels, odb_node_labels)
-            displacements[map_indices] = [v.data for v in disp_values]
+            for disp_value in displacement_field.values:
+                node_label = disp_value.nodeLabel
+                if node_label in node_map:
+                    node_index = node_map[node_label]
+                    displacements[node_index] = disp_value.data
 
             final_coords = initial_coords + displacements
+
 
             v0 = final_coords[connectivity[:, 0]]
             v1 = final_coords[connectivity[:, 1]]
             v2 = final_coords[connectivity[:, 2]]
+            
             area_3d = 0.5 * np.linalg.norm(np.cross(v1 - v0, v2 - v0), axis=1)
             A_wrinked = np.sum(area_3d)
             delta_A_ratio = (A_wrinked - INITIAL_A) / INITIAL_A
