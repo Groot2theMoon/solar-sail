@@ -67,16 +67,16 @@ def J_high(odb_path):
         elements = instance.elements
         initial_coords = np.array([node.coordinates for node in nodes])
         connectivity = np.array([elem.connectivity for elem in elements]) - 1
+        all_node_labels = [node.label for node in nodes]
 
         for frame in step.frames:
             displacement_field = frame.fieldOutputs['U']
 
             displacements = np.zeros_like(initial_coords)
-            node_labels = [np.label for node in nodes]
             disp_values = displacement_field.values
 
             odb_node_labels = [v.nodeLabel for v in disp_values]
-            map_indices = np.searchsorted(node_labels, odb_node_labels)
+            map_indices = np.searchsorted(all_node_labels, odb_node_labels)
             displacements[map_indices] = [v.data for v in disp_values]
 
             final_coords = initial_coords + displacements
