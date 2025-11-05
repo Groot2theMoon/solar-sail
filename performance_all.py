@@ -1,16 +1,17 @@
 from odbAccess import openOdb, OdbError
+from abaqusConstants import INTEGRATION_POINT
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-# --- Constants ---
+np.set_printoptions(precision=16, suppress=True)
 
 YIELD_STRENGTH = 70.0E6  # Pa
 
 R0 = 0.926256
 A0 = 0.073744
 
-INITIAL_A = 0.025    # m^2
+INITIAL_A = 0.025625   # m^2
 
 J_ideal = (2 * R0 + A0 ) # / sigma0
 
@@ -59,6 +60,9 @@ def J_high(odb_path):
     비선형 포스트버클링 .odb의 모든 프레임에 대해 성능효율을 계산, list 로 반환
     """
     performance = []
+    n = []
+    area = []
+
     try:
         odb = openOdb(path=odb_path, readOnly=True)
         step = odb.steps['Step-1']
@@ -72,6 +76,17 @@ def J_high(odb_path):
 
         node_map = {node.label: idx for idx, node in enumerate(nodes)}
 
+        length = 0.25
+        width = 0.1
+
+        moving_edge_indices = [
+            i for i, coords in enumerate(initial_coords)
+            if abs(coords[0] - length) < 1e-6
+        ]
+        if not moving_edge_indices:
+            print(f"  - Error in J_high: Could not find nodes on the moving edge for ODB '{odb_path}'.")
+            odb.close(); return []
+
         for frame in step.frames:
             displacements = np.zeros_like(initial_coords)
             displacement_field = frame.fieldOutputs['U']
@@ -84,38 +99,43 @@ def J_high(odb_path):
 
             final_coords = initial_coords + displacements
 
-
             v0 = final_coords[connectivity[:, 0]]
             v1 = final_coords[connectivity[:, 1]]
             v2 = final_coords[connectivity[:, 2]]
+            v3 = final_coords[connectivity[:, 3]]
             
-            area_3d = 0.5 * np.linalg.norm(np.cross(v1 - v0, v2 - v0), axis=1)
-            A_wrinked = np.sum(area_3d)
-            delta_A_ratio = (A_wrinked - INITIAL_A) / INITIAL_A
+            cross_product1 = np.cross(v1 - v0, v2 - v0)
+            cross_product2 = np.cross(v2 - v0, v3 - v0)
 
-            normal = np.cross(v1 - v0, v2 - v0)
-            z_sign = np.sign(normal[:, 2])
-            z_sign[z_sign == 0] = 1
-            normal *= z_sign[:, np.newaxis]
-            normal /= np.linalg.norm(normal, axis=1)[:, np.newaxis]
+            area_3d_scalar = 0.5 * (np.linalg.norm(cross_product1, axis=1) + np.linalg.norm(cross_product2, axis=1))
+            
+            A_wrinkled = np.sum(area_3d_scalar)
+            
+            A_ideal_deformed = np.mean(final_coords[moving_edge_indices, 0]) * width
 
-            cos = np.dot(normal, U_SUN)
-            weights = cos**2
-            n_eff = np.mean(normal * weights[:, np.newaxis], axis=0)
+            delta_A_ratio =  (A_wrinkled - A_ideal_deformed) / (A_ideal_deformed)
+            
+            area_3d_vec = 0.5 * (cross_product1 + cross_product2)
+
+            n_eff = np.sum(area_3d_vec, axis=0) / A_wrinkled
+            #n_eff /= np.linalg.norm(n_eff)
+            
             cos_v_eff = np.dot(n_eff, U_SUN)
-            cos_v_eff = np.clip(cos_v_eff, -1.0, 1.0)
 
             L_w = (1 + delta_A_ratio) * (2 * R0 * (cos_v_eff**2) * n_eff + A0 * cos_v_eff * U_SUN)
 
-            j_frame = -np.dot(L_w, U_SUN)/J_ideal
-            performance.append(j_frame)
+            j_high_for_frame = -np.dot(L_w, U_SUN) #/ J_ideal
+
+            performance.append(j_high_for_frame)
+            n.append(cos_v_eff)
+            area.append(delta_A_ratio)
 
         odb.close()
-        return performance
+        return performance, n, area
     
     except Exception as e:
         print(f"Error reading ODB file: {e}")
-        return []
+        return [], [], []
 
 if __name__ == "__main__":
 
@@ -143,12 +163,12 @@ if __name__ == "__main__":
     print(f"\n[2] Testing High-Fidelity (Performance Efficiency) Calculation...")
     print(f"   - Target ODB: {test_odb_path_hf}")
 
-    j_high = J_high(test_odb_path_hf)
+    j_high, n_high, area_high = J_high(test_odb_path_hf)
 
     if j_high is not None and len(j_high) > 0:
-        print(f"\n   >>> RESULT: J'_High (Performance Efficiency) = \n")
-        for i in j_high:
-            print(f"{i*100:.3f}")
+        for i in n_high:
+            print(i)
+
         plt.figure(figsize=(10, 5))
         plt.plot(j_high, marker='o', linestyle='-', color='b')
         plt.title("High-Fidelity Performance Efficiency")
@@ -157,6 +177,23 @@ if __name__ == "__main__":
         plt.grid()
         plt.axhline(0, color='red', linestyle='--')  # 0선 추가
         plt.xticks(range(len(j_high)))  # x축 눈금 설정
+
+        plt.figure(figsize=(10, 5))
+        plt.plot(n_high, marker='o', linestyle='-', color='b')
+        plt.title("High-Fidelity Normal Vector")
+        plt.xlabel("Frame Index")
+        plt.ylabel("Normal Vector (N_High)")
+        plt.grid()
+        plt.xticks(range(len(n_high)))  # x축 눈금 설정
+
+        plt.figure(figsize=(10, 5))
+        plt.plot(area_high, marker='o', linestyle='-', color='b')
+        plt.title("High-Fidelity Area Ratio")
+        plt.xlabel("Frame Index")
+        plt.ylabel("Area Ratio (A'_High)")
+        plt.grid()
+        plt.xticks(range(len(area_high)))  # x축 눈금 설정
+
         plt.show()
     else:
         print("\n   >>> HF calculation failed (or constraint violated).")
