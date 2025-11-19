@@ -80,6 +80,8 @@ def J_high(odb_path):
         if initial_area < 1e-12:
             print("Warning: Initial area is zero.")
             initial_area = 1.0 
+        
+        print(f"Initial Area (A0): {initial_area:.6f}")
 
         # 이상적인 Lightness Vector 한계치 (효율 계산용 분모)
         # L_ideal = 2*R0 + A0
@@ -161,10 +163,8 @@ def J_high(odb_path):
         traceback.print_exc()
         return [], [], [], []
 
-# --- Main Execution & Visualization ---
 if __name__ == "__main__":
-    # 분석할 ODB 파일 경로 설정
-    target_odb = 'postbuckle.odb'  # 실제 ODB 파일명으로 변경
+    target_odb = 'postbuckle.odb'
     
     print(f"Analyzing ODB: {target_odb}")
     
@@ -177,33 +177,33 @@ if __name__ == "__main__":
         print(f"Final Efficiency:       {effs[-1]:.2f} %")
         print(f"Final Flatness:         {flats[-1]:.6f}")
 
-        for i in range(len(effs)):
-            print(f"Time: {times[i]:.4f} | Thrust: {mags[i]:.6f} | Efficiency: {effs[i]:.2f} % | Flatness: {flats[i]:.6f}")
+        # 프레임 인덱스 생성 (0, 1, 2, ...)
+        frames = np.arange(len(times))
 
         # 시각화 (Matplotlib)
-        plt.style.use('default')
+        plt.style.use('seaborn-darkgrid')
         fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
 
         # 1. Thrust Magnitude Graph
-        axes[0].plot(times, mags, 'r-o', linewidth=2)
+        axes[0].plot(frames, mags, 'r-o', linewidth=1.5, markersize=4)
         axes[0].set_ylabel('Thrust Magnitude (L_eff)', fontsize=12)
         axes[0].set_title('Solar Sail Performance Analysis', fontsize=14, fontweight='bold')
         axes[0].grid(True)
 
         # 2. Efficiency Graph
-        axes[1].plot(times, effs, 'g-s', linewidth=2)
+        axes[1].plot(frames, effs, 'g-s', linewidth=1.5, markersize=4)
         axes[1].set_ylabel('Thrust Efficiency (%)', fontsize=12)
         axes[1].grid(True)
-        # 100% 라인 표시
-        axes[1].axhline(100, color='gray', linestyle='--', alpha=0.7)
-
+        
         # 3. Flatness Graph
-        axes[2].plot(times, flats, 'b-^', linewidth=2)
+        axes[2].plot(frames, flats, 'b-^', linewidth=1.5, markersize=4)
         axes[2].set_ylabel('Flatness Factor', fontsize=12)
-        axes[2].set_xlabel('Simulation Time (or Frame)', fontsize=12)
+        axes[2].set_xlabel('Frame Index', fontsize=12) # X축 라벨 변경
         axes[2].grid(True)
-        # 완벽한 평면(1.0) 라인 표시
-        axes[2].axhline(1.0, color='gray', linestyle='--', alpha=0.7)
+
+        # X축 눈금을 정수로 설정 (프레임이므로)
+        # 프레임이 너무 많으면 알아서 간격 조정됨
+        # axes[2].xaxis.set_major_locator(plt.MaxNLocator(integer=True))
 
         plt.tight_layout()
         plt.show()
