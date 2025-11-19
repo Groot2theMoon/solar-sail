@@ -187,8 +187,6 @@ if __name__ == "__main__":
         axes[2].set_xlabel('Frame Index', fontsize=12) # X축 라벨 변경
         axes[2].grid(True)
 
-        axes[2].xaxis.set_major_locator(plt.MaxNLocator(integer=True))
-
         plt.tight_layout()
         plt.show()
         
