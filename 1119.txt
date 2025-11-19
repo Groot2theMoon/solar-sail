@@ -1,73 +1,71 @@
-------------------------------------------------------------------------
-Running the following command: abaqus python solar-sail\1119_allframe.py
-------------------------------------------------------------------------
 Analyzing ODB: postbuckle.odb
+Initial Area (A0): 0.020000
 Processing 63 frames...
 
 Analysis Complete.
 Final Thrust Magnitude: 1.778548
-Final Efficiency:       92.33 %
+Final Efficiency:       99.987643 %
 Final Flatness:         0.999941
-Time: 0.0000 | Thrust: 1.778768 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.1000 | Thrust: 1.778768 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.2000 | Thrust: 1.778768 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.3500 | Thrust: 1.778768 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.4062 | Thrust: 1.778768 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.4115 | Thrust: 1.778768 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.4135 | Thrust: 1.778767 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.4165 | Thrust: 1.778767 | Efficiency: 92.34 % | Flatness: 1.000000
-Time: 0.4209 | Thrust: 1.778766 | Efficiency: 92.34 % | Flatness: 0.999999
-Time: 0.4276 | Thrust: 1.778764 | Efficiency: 92.34 % | Flatness: 0.999999
-Time: 0.4282 | Thrust: 1.778764 | Efficiency: 92.34 % | Flatness: 0.999999
-Time: 0.4285 | Thrust: 1.778764 | Efficiency: 92.34 % | Flatness: 0.999999
-Time: 0.4288 | Thrust: 1.778764 | Efficiency: 92.34 % | Flatness: 0.999999
-Time: 0.4293 | Thrust: 1.778763 | Efficiency: 92.34 % | Flatness: 0.999999
-Time: 0.4301 | Thrust: 1.778763 | Efficiency: 92.34 % | Flatness: 0.999999
-Time: 0.4313 | Thrust: 1.778762 | Efficiency: 92.34 % | Flatness: 0.999998
-Time: 0.4331 | Thrust: 1.778760 | Efficiency: 92.34 % | Flatness: 0.999998
-Time: 0.4358 | Thrust: 1.778758 | Efficiency: 92.34 % | Flatness: 0.999997
-Time: 0.4398 | Thrust: 1.778755 | Efficiency: 92.34 % | Flatness: 0.999997
-Time: 0.4458 | Thrust: 1.778750 | Efficiency: 92.34 % | Flatness: 0.999995
-Time: 0.4548 | Thrust: 1.778743 | Efficiency: 92.34 % | Flatness: 0.999993
-Time: 0.4683 | Thrust: 1.778729 | Efficiency: 92.34 % | Flatness: 0.999990
-Time: 0.4696 | Thrust: 1.778729 | Efficiency: 92.34 % | Flatness: 0.999990
-Time: 0.4715 | Thrust: 1.778728 | Efficiency: 92.34 % | Flatness: 0.999989
-Time: 0.4744 | Thrust: 1.778727 | Efficiency: 92.34 % | Flatness: 0.999989
-Time: 0.4786 | Thrust: 1.778724 | Efficiency: 92.34 % | Flatness: 0.999988
-Time: 0.4851 | Thrust: 1.778721 | Efficiency: 92.34 % | Flatness: 0.999987
-Time: 0.4947 | Thrust: 1.778715 | Efficiency: 92.34 % | Flatness: 0.999986
-Time: 0.5091 | Thrust: 1.778707 | Efficiency: 92.34 % | Flatness: 0.999984
-Time: 0.5308 | Thrust: 1.778694 | Efficiency: 92.34 % | Flatness: 0.999980
-Time: 0.5389 | Thrust: 1.778687 | Efficiency: 92.34 % | Flatness: 0.999978
-Time: 0.5511 | Thrust: 1.778674 | Efficiency: 92.34 % | Flatness: 0.999975
-Time: 0.5694 | Thrust: 1.778654 | Efficiency: 92.34 % | Flatness: 0.999969
-Time: 0.5711 | Thrust: 1.778658 | Efficiency: 92.34 % | Flatness: 0.999970
-Time: 0.5718 | Thrust: 1.778658 | Efficiency: 92.34 % | Flatness: 0.999970
-Time: 0.5727 | Thrust: 1.778657 | Efficiency: 92.34 % | Flatness: 0.999970
-Time: 0.5742 | Thrust: 1.778656 | Efficiency: 92.34 % | Flatness: 0.999970
-Time: 0.5764 | Thrust: 1.778654 | Efficiency: 92.34 % | Flatness: 0.999969
-Time: 0.5796 | Thrust: 1.778652 | Efficiency: 92.34 % | Flatness: 0.999969
-Time: 0.5845 | Thrust: 1.778648 | Efficiency: 92.34 % | Flatness: 0.999968
-Time: 0.5918 | Thrust: 1.778643 | Efficiency: 92.34 % | Flatness: 0.999966
-Time: 0.6028 | Thrust: 1.778635 | Efficiency: 92.34 % | Flatness: 0.999964
-Time: 0.6038 | Thrust: 1.778635 | Efficiency: 92.34 % | Flatness: 0.999964
-Time: 0.6054 | Thrust: 1.778634 | Efficiency: 92.34 % | Flatness: 0.999964
-Time: 0.6077 | Thrust: 1.778633 | Efficiency: 92.34 % | Flatness: 0.999964
-Time: 0.6112 | Thrust: 1.778632 | Efficiency: 92.34 % | Flatness: 0.999963
-Time: 0.6164 | Thrust: 1.778630 | Efficiency: 92.34 % | Flatness: 0.999963
-Time: 0.6242 | Thrust: 1.778627 | Efficiency: 92.34 % | Flatness: 0.999962
-Time: 0.6359 | Thrust: 1.778623 | Efficiency: 92.34 % | Flatness: 0.999961
-Time: 0.6535 | Thrust: 1.778616 | Efficiency: 92.34 % | Flatness: 0.999959
-Time: 0.6799 | Thrust: 1.778606 | Efficiency: 92.33 % | Flatness: 0.999956
-Time: 0.7195 | Thrust: 1.778595 | Efficiency: 92.33 % | Flatness: 0.999953
-Time: 0.7344 | Thrust: 1.778587 | Efficiency: 92.33 % | Flatness: 0.999951
-Time: 0.7566 | Thrust: 1.778575 | Efficiency: 92.33 % | Flatness: 0.999948
-Time: 0.7587 | Thrust: 1.778578 | Efficiency: 92.33 % | Flatness: 0.999949
-Time: 0.7618 | Thrust: 1.778577 | Efficiency: 92.33 % | Flatness: 0.999949
-Time: 0.7665 | Thrust: 1.778576 | Efficiency: 92.33 % | Flatness: 0.999948
-Time: 0.7736 | Thrust: 1.778575 | Efficiency: 92.33 % | Flatness: 0.999948
-Time: 0.7842 | Thrust: 1.778572 | Efficiency: 92.33 % | Flatness: 0.999947
-Time: 0.8000 | Thrust: 1.778568 | Efficiency: 92.33 % | Flatness: 0.999946
-Time: 0.8238 | Thrust: 1.778562 | Efficiency: 92.33 % | Flatness: 0.999944
-Time: 0.8595 | Thrust: 1.778548 | Efficiency: 92.33 % | Flatness: 0.999941
-Time: 0.8595 | Thrust: 1.778548 | Efficiency: 92.33 % | Flatness: 0.999941
+Frame 0: Time=0.0000, Thrust=1.778768, Efficiency=100.000000%, Flatness=1.000000
+Frame 1: Time=0.1000, Thrust=1.778768, Efficiency=100.000000%, Flatness=1.000000
+Frame 2: Time=0.2000, Thrust=1.778768, Efficiency=100.000000%, Flatness=1.000000
+Frame 3: Time=0.3500, Thrust=1.778768, Efficiency=100.000000%, Flatness=1.000000
+Frame 4: Time=0.4062, Thrust=1.778768, Efficiency=99.999997%, Flatness=1.000000
+Frame 5: Time=0.4115, Thrust=1.778768, Efficiency=99.999985%, Flatness=1.000000
+Frame 6: Time=0.4135, Thrust=1.778767, Efficiency=99.999951%, Flatness=1.000000
+Frame 7: Time=0.4165, Thrust=1.778767, Efficiency=99.999922%, Flatness=1.000000
+Frame 8: Time=0.4209, Thrust=1.778766, Efficiency=99.999873%, Flatness=0.999999
+Frame 9: Time=0.4276, Thrust=1.778764, Efficiency=99.999794%, Flatness=0.999999
+Frame 10: Time=0.4282, Thrust=1.778764, Efficiency=99.999788%, Flatness=0.999999
+Frame 11: Time=0.4285, Thrust=1.778764, Efficiency=99.999763%, Flatness=0.999999
+Frame 12: Time=0.4288, Thrust=1.778764, Efficiency=99.999749%, Flatness=0.999999
+Frame 13: Time=0.4293, Thrust=1.778763, Efficiency=99.999728%, Flatness=0.999999
+Frame 14: Time=0.4301, Thrust=1.778763, Efficiency=99.999697%, Flatness=0.999999
+Frame 15: Time=0.4313, Thrust=1.778762, Efficiency=99.999648%, Flatness=0.999998
+Frame 16: Time=0.4331, Thrust=1.778760, Efficiency=99.999574%, Flatness=0.999998
+Frame 17: Time=0.4358, Thrust=1.778758, Efficiency=99.999459%, Flatness=0.999997
+Frame 18: Time=0.4398, Thrust=1.778755, Efficiency=99.999279%, Flatness=0.999997
+Frame 19: Time=0.4458, Thrust=1.778750, Efficiency=99.998996%, Flatness=0.999995
+Frame 20: Time=0.4548, Thrust=1.778743, Efficiency=99.998570%, Flatness=0.999993
+Frame 21: Time=0.4683, Thrust=1.778729, Efficiency=99.997815%, Flatness=0.999990
+Frame 22: Time=0.4696, Thrust=1.778729, Efficiency=99.997830%, Flatness=0.999990
+Frame 23: Time=0.4715, Thrust=1.778728, Efficiency=99.997773%, Flatness=0.999989
+Frame 24: Time=0.4744, Thrust=1.778727, Efficiency=99.997686%, Flatness=0.999989
+Frame 25: Time=0.4786, Thrust=1.778724, Efficiency=99.997554%, Flatness=0.999988
+Frame 26: Time=0.4851, Thrust=1.778721, Efficiency=99.997353%, Flatness=0.999987
+Frame 27: Time=0.4947, Thrust=1.778715, Efficiency=99.997042%, Flatness=0.999986
+Frame 28: Time=0.5091, Thrust=1.778707, Efficiency=99.996572%, Flatness=0.999984
+Frame 29: Time=0.5308, Thrust=1.778694, Efficiency=99.995815%, Flatness=0.999980
+Frame 30: Time=0.5389, Thrust=1.778687, Efficiency=99.995426%, Flatness=0.999978
+Frame 31: Time=0.5511, Thrust=1.778674, Efficiency=99.994729%, Flatness=0.999975
+Frame 32: Time=0.5694, Thrust=1.778654, Efficiency=99.993597%, Flatness=0.999969
+Frame 33: Time=0.5711, Thrust=1.778658, Efficiency=99.993815%, Flatness=0.999970
+Frame 34: Time=0.5718, Thrust=1.778658, Efficiency=99.993791%, Flatness=0.999970
+Frame 35: Time=0.5727, Thrust=1.778657, Efficiency=99.993751%, Flatness=0.999970
+Frame 36: Time=0.5742, Thrust=1.778656, Efficiency=99.993690%, Flatness=0.999970
+Frame 37: Time=0.5764, Thrust=1.778654, Efficiency=99.993599%, Flatness=0.999969
+Frame 38: Time=0.5796, Thrust=1.778652, Efficiency=99.993463%, Flatness=0.999969
+Frame 39: Time=0.5845, Thrust=1.778648, Efficiency=99.993261%, Flatness=0.999968
+Frame 40: Time=0.5918, Thrust=1.778643, Efficiency=99.992953%, Flatness=0.999966
+Frame 41: Time=0.6028, Thrust=1.778635, Efficiency=99.992502%, Flatness=0.999964
+Frame 42: Time=0.6038, Thrust=1.778635, Efficiency=99.992510%, Flatness=0.999964
+Frame 43: Time=0.6054, Thrust=1.778634, Efficiency=99.992477%, Flatness=0.999964
+Frame 44: Time=0.6077, Thrust=1.778633, Efficiency=99.992427%, Flatness=0.999964
+Frame 45: Time=0.6112, Thrust=1.778632, Efficiency=99.992352%, Flatness=0.999963
+Frame 46: Time=0.6164, Thrust=1.778630, Efficiency=99.992241%, Flatness=0.999963
+Frame 47: Time=0.6242, Thrust=1.778627, Efficiency=99.992075%, Flatness=0.999962
+Frame 48: Time=0.6359, Thrust=1.778623, Efficiency=99.991829%, Flatness=0.999961
+Frame 49: Time=0.6535, Thrust=1.778616, Efficiency=99.991466%, Flatness=0.999959
+Frame 50: Time=0.6799, Thrust=1.778606, Efficiency=99.990905%, Flatness=0.999956
+Frame 51: Time=0.7195, Thrust=1.778595, Efficiency=99.990267%, Flatness=0.999953
+Frame 52: Time=0.7344, Thrust=1.778587, Efficiency=99.989850%, Flatness=0.999951
+Frame 53: Time=0.7566, Thrust=1.778575, Efficiency=99.989164%, Flatness=0.999948
+Frame 54: Time=0.7587, Thrust=1.778578, Efficiency=99.989327%, Flatness=0.999949
+Frame 55: Time=0.7618, Thrust=1.778577, Efficiency=99.989287%, Flatness=0.999949
+Frame 56: Time=0.7665, Thrust=1.778576, Efficiency=99.989223%, Flatness=0.999948
+Frame 57: Time=0.7736, Thrust=1.778575, Efficiency=99.989127%, Flatness=0.999948
+Frame 58: Time=0.7842, Thrust=1.778572, Efficiency=99.988995%, Flatness=0.999947
+Frame 59: Time=0.8000, Thrust=1.778568, Efficiency=99.988780%, Flatness=0.999946
+Frame 60: Time=0.8238, Thrust=1.778562, Efficiency=99.988401%, Flatness=0.999944
+Frame 61: Time=0.8595, Thrust=1.778548, Efficiency=99.987643%, Flatness=0.999941
+Frame 62: Time=0.8595, Thrust=1.778548, Efficiency=99.987643%, Flatness=0.999941

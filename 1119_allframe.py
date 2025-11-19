@@ -72,7 +72,7 @@ def J_high(odb_path):
         print(f"Initial Area (A0): {initial_area:.6f}")
 
         # L_ideal = 2*R0 + A0
-        L_ideal_material_limit = 2 * R0 + A0
+        L_ideal_material_limit = 2 * R0 - A0
 
         # --- [Main Loop] 모든 프레임 순회 ---
         print(f"Processing {len(step.frames)} frames...")
@@ -159,10 +159,13 @@ if __name__ == "__main__":
     if len(times) > 0:
         print("\nAnalysis Complete.")
         print(f"Final Thrust Magnitude: {mags[-1]:.6f}")
-        print(f"Final Efficiency:       {effs[-1]:.2f} %")
+        print(f"Final Efficiency:       {effs[-1]:.6f} %")
         print(f"Final Flatness:         {flats[-1]:.6f}")
 
         frames = np.arange(len(times))
+
+        for i in range(len(times)):
+            print(f"Frame {i}: Time={times[i]:.4f}, Thrust={mags[i]:.6f}, Efficiency={effs[i]:.6f}%, Flatness={flats[i]:.6f}")
 
         plt.style.use('default')
         fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
