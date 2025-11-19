@@ -50,17 +50,6 @@ def J_high(odb_path):
         raw_connectivity = np.array([elem.connectivity for elem in elements])
         connectivity = np.searchsorted(all_node_labels, raw_connectivity)
 
-        v0_i = initial_coords[connectivity[:, 0]]
-        v1_i = initial_coords[connectivity[:, 1]]
-        v2_i = initial_coords[connectivity[:, 2]]
-        v3_i = initial_coords[connectivity[:, 3]]
-
-        init_area_vec = 0.5 * (np.cross(v1_i - v0_i, v2_i - v0_i) + np.cross(v2_i - v0_i, v3_i - v0_i))
-        initial_area = np.sum(np.linalg.norm(init_area_vec, axis=1))
-
-        if initial_area < 1e-12:
-            print("Warning: Initial area is zero. Check the model geometry.")
-            initial_area = 1.0 
         displacements = np.zeros_like(initial_coords)
         u_field = frame.fieldOutputs['U']
         
@@ -107,9 +96,12 @@ def J_high(odb_path):
 
         flatness_factor = A_projected / A_wrinkled if A_wrinkled > 1e-9 else 0.0
 
+        L_ideal_material_limit = 2 * R0 + A0
+
+        thrust_efficiency = thrust_magnitude / L_ideal_material_limit if L_ideal_material_limit > 0 else 0.0
         odb.close()
         
-        return thrust_magnitude, flatness_factor
+        return thrust_magnitude, flatness_factor, thrust_efficiency
 
     except Exception as e:
-        return 0.0, 0.0
+        return 0.0, 0.0, 0.0
