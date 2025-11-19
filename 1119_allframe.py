@@ -9,9 +9,6 @@ A0 = 0.073744
 U_SUN = np.array([0.0, 0.0, -1.0])
 
 def J_low(odb_path):
-    """
-    Low-Fidelity: 압축 응력 요소 비율 계산
-    """
     try:
         odb = openOdb(path=odb_path, readOnly=True)
         frame = odb.steps['Step-1'].frames[-1]
@@ -36,11 +33,6 @@ def J_low(odb_path):
         return 1.0 
 
 def J_high(odb_path):
-    """
-    High-Fidelity: 모든 프레임에 대해 추력 성능 및 효율 계산
-    Returns: (times, magnitudes, flatness_factors, efficiencies)
-    """
-    # 결과 저장용 리스트
     time_steps = []
     magnitudes = []
     flatness_factors = []
@@ -54,21 +46,17 @@ def J_high(odb_path):
         nodes = instance.nodes
         elements = instance.elements
 
-        # --- [Pre-computation] 초기 형상 정보 추출 ---
-        # 매 프레임 반복되지 않도록 루프 밖에서 처리
         initial_coords = np.array([node.coordinates for node in nodes], dtype=np.float64)
         all_node_labels = np.array([node.label for node in nodes], dtype=np.int32)
-        
-        # 정렬 (searchsorted 최적화)
+
         sort_idx = np.argsort(all_node_labels)
         all_node_labels = all_node_labels[sort_idx]
         initial_coords = initial_coords[sort_idx]
 
-        # Connectivity 변환
         raw_connectivity = np.array([elem.connectivity for elem in elements])
         connectivity = np.searchsorted(all_node_labels, raw_connectivity)
 
-        # --- 초기 면적(A0) 동적 계산 ---
+        # --- 초기 면적  ---
         v0_i = initial_coords[connectivity[:, 0]]
         v1_i = initial_coords[connectivity[:, 1]]
         v2_i = initial_coords[connectivity[:, 2]]
@@ -83,7 +71,6 @@ def J_high(odb_path):
         
         print(f"Initial Area (A0): {initial_area:.6f}")
 
-        # 이상적인 Lightness Vector 한계치 (효율 계산용 분모)
         # L_ideal = 2*R0 + A0
         L_ideal_material_limit = 2 * R0 + A0
 
@@ -148,7 +135,6 @@ def J_high(odb_path):
             # 3. Thrust Efficiency (%)
             eff_val = (thrust_val / L_ideal_material_limit) * 100.0 if L_ideal_material_limit > 0 else 0.0
 
-            # 리스트에 저장
             time_steps.append(current_time)
             magnitudes.append(thrust_val)
             flatness_factors.append(flatness_val)
@@ -168,7 +154,6 @@ if __name__ == "__main__":
     
     print(f"Analyzing ODB: {target_odb}")
     
-    # J_high 함수 호출
     times, mags, flats, effs = J_high(target_odb)
     
     if len(times) > 0:
@@ -177,10 +162,8 @@ if __name__ == "__main__":
         print(f"Final Efficiency:       {effs[-1]:.2f} %")
         print(f"Final Flatness:         {flats[-1]:.6f}")
 
-        # 프레임 인덱스 생성 (0, 1, 2, ...)
         frames = np.arange(len(times))
 
-        # 시각화 (Matplotlib)
         plt.style.use('seaborn-darkgrid')
         fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
 
@@ -201,9 +184,7 @@ if __name__ == "__main__":
         axes[2].set_xlabel('Frame Index', fontsize=12) # X축 라벨 변경
         axes[2].grid(True)
 
-        # X축 눈금을 정수로 설정 (프레임이므로)
-        # 프레임이 너무 많으면 알아서 간격 조정됨
-        # axes[2].xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+        axes[2].xaxis.set_major_locator(plt.MaxNLocator(integer=True))
 
         plt.tight_layout()
         plt.show()
