@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
         frames = np.arange(len(times))
 
-        plt.style.use('seaborn-darkgrid')
+        plt.style.use('default')
         fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
 
         # 1. Thrust Magnitude Graph
