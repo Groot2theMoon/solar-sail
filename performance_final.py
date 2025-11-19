@@ -31,9 +31,9 @@ def J_low(odb_path):
         return 1.0 
 
 def J_high(odb_path):
-
     try:
         odb = openOdb(path=odb_path, readOnly=True)
+        
         frame = odb.steps['Step-1'].frames[-1] 
         instance = odb.rootAssembly.instances['PART-1-1']
         
@@ -50,13 +50,23 @@ def J_high(odb_path):
         raw_connectivity = np.array([elem.connectivity for elem in elements])
         connectivity = np.searchsorted(all_node_labels, raw_connectivity)
 
+        v0_i = initial_coords[connectivity[:, 0]]
+        v1_i = initial_coords[connectivity[:, 1]]
+        v2_i = initial_coords[connectivity[:, 2]]
+        v3_i = initial_coords[connectivity[:, 3]]
+
+        init_area_vec = 0.5 * (np.cross(v1_i - v0_i, v2_i - v0_i) + np.cross(v2_i - v0_i, v3_i - v0_i))
+        initial_area = np.sum(np.linalg.norm(init_area_vec, axis=1))
+
+        if initial_area < 1e-12:
+            print("Warning: Initial area is zero. Check the model geometry.")
+            initial_area = 1.0 
         displacements = np.zeros_like(initial_coords)
         u_field = frame.fieldOutputs['U']
         
         for block in u_field.bulkDataBlocks:
             block_labels = block.nodeLabels
             block_data = block.data
-            
             idx_locs = np.searchsorted(all_node_labels, block_labels)
             displacements[idx_locs] = block_data
 
@@ -68,7 +78,6 @@ def J_high(odb_path):
         v3 = final_coords[connectivity[:, 3]]
 
         area_3d_vec = 0.5 * (np.cross(v1 - v0, v2 - v0) + np.cross(v2 - v0, v3 - v0))
-
         elem_area = np.linalg.norm(area_3d_vec, axis=1)
         
         valid_mask = elem_area > 1e-16
@@ -87,7 +96,7 @@ def J_high(odb_path):
         
         total_force_vector = np.sum(force_abs + force_refl, axis=0)
 
-        A_projected = np.sum(area_3d_vec, axis=0)[2] # Z축 투영 면적
+        A_projected = np.sum(area_3d_vec, axis=0)[2]
         A_wrinkled = np.sum(elem_area)
 
         if A_projected > 1e-9:
@@ -102,5 +111,5 @@ def J_high(odb_path):
         
         return thrust_magnitude, flatness_factor
 
-    except Exception:
+    except Exception as e:
         return 0.0, 0.0
