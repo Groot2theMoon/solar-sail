@@ -62,80 +62,97 @@ def J_high(odb_path):
     """
     비선형 포스트버클링 .odb의 모든 프레임에 대해 성능효율을 계산, list 로 반환
     """
-    performance = []
-    n = []
+    performance_efficiency_list = []
     area = []
-    angle = []
+    n = []
+    sfi_list = []
+
+    # 이상적인 돛(완전 평면, 태양광에 수직)의 기준 성능 J_ideal 계산
+    # n=(0,0,1), cos_v=1, area_factor=1 일 때의 최대 추력 성분
+    n_ideal = np.array([0.0, 0.0, 1.0])
+    J_ideal_vector = 2 * R0 * n_ideal + A0 * U_SUN
+    J_ideal = np.dot(J_ideal_vector, -U_SUN) # J_ideal = 2*R0 + A0
 
     try:
         odb = openOdb(path=odb_path, readOnly=True)
-        step = odb.steps['Step-1']
+        step = odb.steps['Step-1']  # 스텝 이름 확인 필요
 
-        instance = odb.rootAssembly.instances['PART-1-1']
+        instance = odb.rootAssembly.instances['PART-1-1'] # 인스턴스 이름 확인 필요
         nodes = instance.nodes
         elements = instance.elements
-
         initial_coords = np.array([node.coordinates for node in nodes])
         connectivity = np.array([elem.connectivity for elem in elements]) - 1
-
         node_map = {node.label: idx for idx, node in enumerate(nodes)}
 
+        print(f"Analyzing {len(step.frames)} frames from '{odb_path}' using SFI method...")
+
         for frame in step.frames:
+            # --- 1. 변형 후 노드 좌표 계산 ---
             displacements = np.zeros_like(initial_coords)
             displacement_field = frame.fieldOutputs['U']
-
             for disp_value in displacement_field.values:
                 node_label = disp_value.nodeLabel
                 if node_label in node_map:
-                    node_index = node_map[node_label]
-                    displacements[node_index] = disp_value.data
-
+                    displacements[node_map[node_label]] = disp_value.data
             final_coords = initial_coords + displacements
+            
+            # --- 2. 면적 및 법선 벡터 계산을 위한 정점 좌표 준비 ---
+            v0 = final_coords[connectivity[:, 0]]
+            v1 = final_coords[connectivity[:, 1]]
+            v2 = final_coords[connectivity[:, 2]]
+            v3 = final_coords[connectivity[:, 3]]
+            
+            # 각 요소의 3D 면적 벡터 계산 (방향과 크기 모두 포함)
+            cross_product1 = np.cross(v1 - v0, v2 - v0)
+            cross_product2 = np.cross(v2 - v0, v3 - v0)
+            area_3d_vec = 0.5 * (cross_product1 + cross_product2)
 
-            v0_3d = final_coords[connectivity[:, 0]]
-            v1_3d = final_coords[connectivity[:, 1]]
-            v2_3d = final_coords[connectivity[:, 2]]
-            v3_3d = final_coords[connectivity[:, 3]]
-
-            area_3d_vec = 0.5 * (np.cross(v1_3d - v0_3d, v2_3d - v0_3d) + np.cross(v2_3d - v0_3d, v3_3d - v0_3d))
-
-            # 각 요소의 면적 벡터로부터 수평면(xy-plane) 대비 각도(도 단위)를 계산
-            # 정의: angle = arcsin(|n_z| / |n|)  (0°: 완전히 수평, 90°: 완전히 수직)
-            elem_area_magnitudes = np.linalg.norm(area_3d_vec, axis=1)
-            nonzero_mask = elem_area_magnitudes > 0.0
-
-            unit_normals = np.zeros_like(area_3d_vec)
-            unit_normals[nonzero_mask] = area_3d_vec[nonzero_mask] / elem_area_magnitudes[nonzero_mask][:, None]
-
-            elem_angles_rad = np.arcsin(np.clip(np.abs(unit_normals[:, 2]), 0.0, 1.0))
-            elem_angles_deg = np.degrees(elem_angles_rad)
-
-            # elem_angles_deg: 각 요소별 수평면 대비 각도(도). 필요하면 프레임별로 수집하여 반환하거나 저장하세요.
-
+            # --- 3. SFI 계산 ---
+            # 실제 3D 표면적 (A_wrinkled): 각 면적 벡터의 크기를 합산
+            A_wrinkled = np.sum(np.linalg.norm(area_3d_vec, axis=1))
+            
+            # xy 평면 투영 면적 (A_projected): 각 면적 벡터의 z성분을 합산
             A_projected = np.sum(area_3d_vec, axis=0)[2]
 
-            wrinkle_area_factor = A_projected / 0.02 #초기면적 0.2m^2
+            # SFI (Surface Flatness Index) 계산
+            if A_wrinkled > 1e-12:
+                sfi = A_projected / A_wrinkled
+            else:
+                sfi = 0.0
+            sfi_list.append(sfi)
             
-            A_wrinkled = np.sum(np.linalg.norm(area_3d_vec, axis=1))
+            # --- 4. 방향성 계산 ---
+            # 유효 법선 벡터 (n_eff): 전체 면적 벡터 합을 실제 표면적으로 나눔
             n_eff = np.sum(area_3d_vec, axis=0) / A_wrinkled
+            
+            # 유효 입사각의 코사인 값
             cos_v_eff = np.abs(np.dot(n_eff, U_SUN))
-            v_deg = np.degrees(np.arccos(np.clip(cos_v_eff, -1.0, 1.0)))
 
-            L_w = wrinkle_area_factor * (2 * R0 * cos_v_eff * n_eff + A0 * U_SUN)
+            # --- 5. 최종 성능 지표 계산 ---
+            # 추력의 벡터 부분 계산
+            L_thrust_vec_part = 2 * R0 * cos_v_eff * n_eff + A0 * U_SUN
+            
+            # SFI를 면적 효율 계수로 사용하여 최종 추력 벡터 계산
+            L_w = sfi * L_thrust_vec_part
+            
+            # 추력 방향(-U_SUN)으로의 성분 크기 (J_wrinkled) 계산
             J_wrinkled = np.dot(L_w, -U_SUN)
 
-            performance_efficiency = J_wrinkled #/ J_ideal
-            performance.append(performance_efficiency)
-            n.append(v_deg)  # 도 단위로 변환
-            area.append(wrinkle_area_factor)
-            angle.append(elem_angles_deg)
+            # 이상적인 성능 대비 효율 계산
+            performance_efficiency = J_wrinkled / J_ideal
+            performance_efficiency_list.append(performance_efficiency)
+            n.append(cos_v_eff)
+            area.append(sfi)
 
         odb.close()
-        return performance, n, area, angle
-    
+        print("Analysis complete.")
+        return performance_efficiency_list, n, area
+
     except Exception as e:
-        print(f"Error reading ODB file: {e}")
-        return [], [], []
+        print(f"An error occurred in J_high_SFI: {e}")
+        if 'odb' in locals() and odb.isopen:
+            odb.close()
+        return [], []
 
 if __name__ == "__main__":
 
@@ -157,7 +174,7 @@ if __name__ == "__main__":
     print(f"\n[2] Testing High-Fidelity  Calculation...")
     print(f"   - Target ODB: {test_odb_path_hf}")
 
-    j_high, n_high, area_high, angle_high = J_high(test_odb_path_hf)
+    j_high, n_high, area_high = J_high(test_odb_path_hf)
 
     if j_high is not None and len(j_high) > 0:
         for i in area_high:
@@ -189,33 +206,7 @@ if __name__ == "__main__":
         plt.grid()
         plt.xticks(range(len(area_high)))  # x축 눈금 설정
 
-        if angle_high and -len(angle_high) <= 9 < len(angle_high):
-            angles_for_frame = angle_high[9]
-            actual_frame_number = 9 if 9 >= 0 else len(angle_high) + 9
-            plt.figure(figsize=(12, 6))
-            plt.hist(angles_for_frame, bins=100, color='skyblue', edgecolor='black')
-            plt.title(f"Distribution of Element Angles for Frame {actual_frame_number}", fontsize=16)
-            plt.xlabel("Angle (degrees from horizontal plane)", fontsize=12)
-            plt.ylabel("Number of Elements (Frequency)", fontsize=12)
-            plt.grid(axis='y', linestyle='--', alpha=0.7)
-            print(f"\n[3] Generated a histogram for element angles of frame {actual_frame_number}.")
-        else:
-            print("\n   >>> Could not generate histogram. Invalid frame index or no angle data available.")
-
-        if angle_high and -len(angle_high) <= 25 < len(angle_high):
-            angles_for_frame = angle_high[25]
-            actual_frame_number = 25 if 25 >= 0 else len(angle_high) + 25
-            plt.figure(figsize=(12, 6))
-            plt.hist(angles_for_frame, bins=100, color='skyblue', edgecolor='black')
-            plt.title(f"Distribution of Element Angles for Frame {actual_frame_number}", fontsize=16)
-            plt.xlabel("Angle (degrees from horizontal plane)", fontsize=12)
-            plt.ylabel("Number of Elements (Frequency)", fontsize=12)
-            plt.grid(axis='y', linestyle='--', alpha=0.7)
-            print(f"\n[3] Generated a histogram for element angles of frame {actual_frame_number}.")
-        else:
-            print("\n   >>> Could not generate histogram. Invalid frame index or no angle data available.")
-
-        plt.show() # 모든 그래프를 화면에 표시
+        plt.show()
     else:
         print("\n   >>> HF calculation failed (or constraint violated).")
         
