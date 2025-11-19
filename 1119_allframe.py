@@ -178,7 +178,7 @@ if __name__ == "__main__":
         print(f"Final Flatness:         {flats[-1]:.6f}")
 
         # 시각화 (Matplotlib)
-        plt.style.use('seaborn-darkgrid')
+        plt.style.use('seaborn-poster')
         fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
 
         # 1. Thrust Magnitude Graph
