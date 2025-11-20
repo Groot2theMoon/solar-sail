@@ -71,8 +71,7 @@ def J_high(odb_path):
         
         print(f"Initial Area (A0): {initial_area:.6f}")
 
-        # L_ideal = 2*R0 + A0
-        L_ideal_material_limit = 2 * R0 - A0
+        L_ideal = 2 * R0 + A0
 
         # --- [Main Loop] 모든 프레임 순회 ---
         print(f"Processing {len(step.frames)} frames...")
@@ -125,7 +124,7 @@ def J_high(odb_path):
             # 1. Thrust Magnitude
             if A_projected > 1e-9:
                 L_eff_vec = total_force_vector / A_projected
-                thrust_val = np.linalg.norm(L_eff_vec)
+                thrust_val = np.dot(L_eff_vec, -U_SUN)
             else:
                 thrust_val = 0.0
 
@@ -133,7 +132,7 @@ def J_high(odb_path):
             flatness_val = A_projected / A_wrinkled if A_wrinkled > 1e-9 else 0.0
 
             # 3. Thrust Efficiency (%)
-            eff_val = (thrust_val / L_ideal_material_limit) * 100.0 if L_ideal_material_limit > 0 else 0.0
+            eff_val = (thrust_val / L_ideal) * 100.0 if L_ideal > 0 else 0.0
 
             time_steps.append(current_time)
             magnitudes.append(thrust_val)
