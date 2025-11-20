@@ -114,24 +114,21 @@ def J_high(odb_path):
             cos_theta = np.clip(cos_theta, 0.0, 1.0)
 
             force_abs = A0 * cos_theta[:, np.newaxis] * elem_area[:, np.newaxis] * U_SUN
-            force_refl = 2 * R0 * (cos_theta**2)[:, np.newaxis] * elem_area[:, np.newaxis] * unit_normals
+            force_refl = 2 * R0 * (cos_theta**2)[:, np.newaxis] * elem_area[:, np.newaxis] * (-unit_normals)
             
             total_force_vector = np.sum(force_abs + force_refl, axis=0)
 
             A_projected = np.sum(area_3d_vec, axis=0)[2]
             A_wrinkled = np.sum(elem_area)
 
-            # 1. Thrust Magnitude
             if A_projected > 1e-9:
                 L_eff_vec = total_force_vector / A_projected
                 thrust_val = np.dot(L_eff_vec, -U_SUN)
             else:
                 thrust_val = 0.0
 
-            # 2. Flatness Factor
             flatness_val = A_projected / A_wrinkled if A_wrinkled > 1e-9 else 0.0
 
-            # 3. Thrust Efficiency (%)
             eff_val = (thrust_val / L_ideal) * 100.0 if L_ideal > 0 else 0.0
 
             time_steps.append(current_time)
