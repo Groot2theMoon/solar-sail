@@ -123,7 +123,7 @@ def J_high(odb_path):
 
             if A_projected > 1e-9:
                 L_eff_vec = total_force_vector / A_projected
-                thrust_val = np.dot(L_eff_vec, -U_SUN)
+                thrust_val = np.dot(L_eff_vec, U_SUN)
             else:
                 thrust_val = 0.0
 
